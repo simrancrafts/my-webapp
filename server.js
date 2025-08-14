@@ -29,7 +29,13 @@ app.get("/api/todos", (req, res) => {
 app.post("/api/todos", (req, res) => {
     const { text } = req.body;
     if (text && text.trim() !== "") {
-        const newTodo = { id: Date.now(), text, completed: false };
+        const newTodo = { 
+            id: Date.now(), 
+            text, 
+            completed: false, 
+            createdAt: new Date().toISOString(),
+            completedAt: null
+        };
         todos.push(newTodo);
         fs.writeFileSync(dataFile, JSON.stringify(todos, null, 2));
         res.json(newTodo);
@@ -46,6 +52,11 @@ app.put("/api/todos/:id", (req, res) => {
     const todo = todos.find(t => t.id === id);
     if (todo) {
         todo.completed = completed;
+        if (completed) {
+            todo.completedAt = new Date().toISOString();
+        } else {
+            todo.completedAt = null;
+        }
         fs.writeFileSync(dataFile, JSON.stringify(todos, null, 2));
         res.json(todo);
     } else {
